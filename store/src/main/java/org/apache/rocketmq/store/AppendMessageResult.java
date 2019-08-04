@@ -24,14 +24,15 @@ public class AppendMessageResult {
     private AppendMessageStatus status;
     // Where to start writing
     private long wroteOffset;
-    // Write Bytes
+    // Write Bytes 写入字节总长度
     private int wroteBytes;
     // Message ID
     private String msgId;
-    // Message storage timestamp
+    // Message storage timestamp 写入到MappedFile中的时刻
     private long storeTimestamp;
     // Consume queue's offset(step by one)
     private long logicsOffset;
+    //写入到pagecache中的耗时
     private long pagecacheRT = 0;
 
     private int msgNum = 1;

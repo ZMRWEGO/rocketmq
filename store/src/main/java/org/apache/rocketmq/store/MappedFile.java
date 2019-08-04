@@ -52,11 +52,14 @@ public class MappedFile extends ReferenceResource {
     //ADD BY ChenYang
     protected final AtomicInteger committedPosition = new AtomicInteger(0);
     private final AtomicInteger flushedPosition = new AtomicInteger(0);
+    //文件大小 一般为1G
     protected int fileSize;
+    //nio fileChannel
     protected FileChannel fileChannel;
     /**
      * Message will put to here first, and then reput to FileChannel if writeBuffer is not null.
      */
+    //nio ByteBuffer
     protected ByteBuffer writeBuffer = null;
     protected TransientStorePool transientStorePool = null;
     private String fileName;
@@ -145,6 +148,7 @@ public class MappedFile extends ReferenceResource {
 
     public void init(final String fileName, final int fileSize,
         final TransientStorePool transientStorePool) throws IOException {
+        //初始化缓存池
         init(fileName, fileSize);
         this.writeBuffer = transientStorePool.borrowBuffer();
         this.transientStorePool = transientStorePool;
@@ -154,6 +158,7 @@ public class MappedFile extends ReferenceResource {
         this.fileName = fileName;
         this.fileSize = fileSize;
         this.file = new File(fileName);
+        //获取偏移量
         this.fileFromOffset = Long.parseLong(this.file.getName());
         boolean ok = false;
 
@@ -484,8 +489,14 @@ public class MappedFile extends ReferenceResource {
         this.committedPosition.set(pos);
     }
 
+    /**
+     * http://book.51cto.com/art/200902/109721.htm
+     * @param type
+     * @param pages
+     */
     public void warmMappedFile(FlushDiskType type, int pages) {
         long beginTime = System.currentTimeMillis();
+        //对缓冲区进行分片 范围 原缓冲区的position到limit
         ByteBuffer byteBuffer = this.mappedByteBuffer.slice();
         int flush = 0;
         long time = System.currentTimeMillis();
