@@ -52,7 +52,6 @@ public class MappedFile extends ReferenceResource {
     //ADD BY ChenYang
     protected final AtomicInteger committedPosition = new AtomicInteger(0);
     private final AtomicInteger flushedPosition = new AtomicInteger(0);
-    //文件大小 一般为1G
     protected int fileSize;
     //nio fileChannel
     protected FileChannel fileChannel;
@@ -557,7 +556,8 @@ public class MappedFile extends ReferenceResource {
     public void setFirstCreateInQueue(boolean firstCreateInQueue) {
         this.firstCreateInQueue = firstCreateInQueue;
     }
-
+    //  系统调用 mlock 家族允许程序在物理内存上锁住它的部分或全部地址空间。
+    //  这将阻止Linux 将这个内存页调度到交换空间（swap space），即使该程序已有一段时间没有访问这段空间。
     public void mlock() {
         final long beginTime = System.currentTimeMillis();
         final long address = ((DirectBuffer) (this.mappedByteBuffer)).address();
